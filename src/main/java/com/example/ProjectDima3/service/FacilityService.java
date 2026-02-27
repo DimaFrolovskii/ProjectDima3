@@ -17,13 +17,13 @@ public class FacilityService {
     private final FacilityRepository facilityRepository;
 
     public List<Facility> getAllFacilities() {
-        log.info("Запрос списка всех объектов КИИ"); // INFO лог по п. 8
+        log.info("Запрос списка всех объектов КИИ"); // INFO
         return facilityRepository.findAll();
     }
 
     @Transactional
     public Facility createFacility(Facility facility) {
-        log.debug("Сохранение нового объекта: {}", facility.getName()); // DEBUG лог
+        log.debug("Сохранение нового объекта: {}", facility.getName()); // DEBUG
         return facilityRepository.save(facility);
     }
 

@@ -15,7 +15,7 @@ public class AssetService {
 
     public List<Asset> getAssetsByFacility(Long facilityId) {
         log.info("Запрос активов для объекта с id: {}", facilityId);
-        return assetRepository.findByFacilityId(facilityId); // Наш Query Method
+        return assetRepository.findByFacilityId(facilityId); //Query Method
     }
 
     public Asset createAsset(Asset asset) {

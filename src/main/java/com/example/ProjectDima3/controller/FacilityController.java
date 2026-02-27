@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,10 +33,12 @@ public class FacilityController {
         return new ResponseEntity<>(saved, HttpStatus.CREATED); // Код 201
     }
 
-    @DeleteMapping("/{id}") // Эндпоинт 3: Удаление [cite: 30]
+    @DeleteMapping("/{id}")// Эндпоинт 3: Удаление
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         log.info("REST запрос на удаление объекта id: {}", id);
         facilityService.deleteFacility(id);
         return ResponseEntity.noContent().build(); // Код 204
     }
+
 }
