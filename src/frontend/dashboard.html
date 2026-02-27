@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Панель управления</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        .facility-card { border: 1px solid #ccc; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+<h1>Объекты КИИ</h1>
+<button onclick="logout()">Выйти</button>
+
+<div id="facility-form">
+    <h3>Добавить новый объект</h3>
+    <input type="text" id="facName" placeholder="Название завода">
+    <input type="text" id="facAddress" placeholder="Адрес">
+    <button onclick="addFacility()">Создать</button>
+</div>
+
+<div id="facility-list">
+</div>
+
+<script>
+    const token = localStorage.getItem('jwtToken');
+    if (!token) window.location.href = 'index.html'; // Если нет токена — на вход
+
+    async function loadFacilities() {
+        const response = await fetch('http://localhost:8080/api/facilities', {
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        const data = await response.json();
+        const list = document.getElementById('facility-list');
+        list.innerHTML = data.map(f => `
+            <div class="facility-card">
+                <strong>${f.name}</strong> - ${f.address}
+            </div>
+        `).join('');
+    }
+
+    async function addFacility() {
+        const newFac = {
+            name: document.getElementById('facName').value,
+            address: document.getElementById('facAddress').value
+        };
+        await fetch('http://localhost:8080/api/facilities', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify(newFac)
+        });
+        loadFacilities(); // Обновляем список
+    }
+
+    function logout() {
+        localStorage.removeItem('jwtToken');
+        window.location.href = 'index.html';
+    }
+
+    loadFacilities();
+</script>
+</body>
+</html> 
