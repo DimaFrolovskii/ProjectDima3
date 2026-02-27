@@ -1,0 +1,39 @@
+package com.example.ProjectDima3.exception;
+
+import com.example.ProjectDima3.dto.ErrorResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import java.time.LocalDateTime;
+
+@ControllerAdvice
+@Slf4j
+public class GlobalExceptionHandler {
+
+    // Обработка ошибок валидации (@Valid) [cite: 49, 52]
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex) {
+        log.error("Ошибка валидации: {}", ex.getMessage());
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                "Ошибка валидации данных",
+                ex.getBindingResult().getFieldError().getDefaultMessage()
+        );
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST); // Код 400
+    }
+
+    // Обработка всех остальных исключений [cite: 52]
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex) {
+        log.error("Внутренняя ошибка сервера: ", ex);
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                "Произошла непредвиденная ошибка",
+                ex.getMessage()
+        );
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR); // Код 500
+    }
+}
