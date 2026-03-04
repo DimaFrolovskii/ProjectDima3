@@ -1,4 +1,4 @@
-package com.example.ProjectDima3.service;
+package com.example.ProjectDima3.controller;
 
 import com.example.ProjectDima3.entity.Asset;
 import com.example.ProjectDima3.service.AssetService;

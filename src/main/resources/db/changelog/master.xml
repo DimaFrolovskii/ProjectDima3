@@ -3,8 +3,8 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
-
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+    <include file="db/changelog/changesets/01-create-asset-table.xml"/>
     <changeSet id="1" author="dima">
         <createTable tableName="facility">
             <column name="id" type="BIGINT" autoIncrement="true"><constraints primaryKey="true"/></column>
