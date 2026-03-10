@@ -27,3 +27,27 @@ function logout() {
     localStorage.removeItem('token');
     window.location.href = 'index.html';
 }
+
+async function register() {
+    const username = document.getElementById('regUsername').value;
+    const email = document.getElementById('regEmail').value;
+    const password = document.getElementById('regPassword').value;
+    const errorDiv = document.getElementById('regError');
+
+    try {
+        const response = await fetch('http://localhost:8080/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, email, password })
+        });
+
+        if (response.ok) {
+            alert("Регистрация успешна! Теперь войдите.");
+            window.location.href = 'index.html';
+        } else {
+            errorDiv.style.display = 'block';
+        }
+    } catch (err) {
+        alert("Ошибка сервера при регистрации");
+    }
+}

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Регистрация нового пользователя</h2>
+        <input type="text" id="regUsername" placeholder="Придумайте логин">
+        <input type="email" id="regEmail" placeholder="Ваш Email">
+        <input type="password" id="regPassword" placeholder="Придумайте пароль">
+        <button onclick="register()" style="background: #007bff;">Зарегистрироваться</button>
+        <p style="text-align: center; margin-top: 15px;">
+            Уже есть аккаунт? <a href="index.html">Войти</a>
+        </p>
+        <div id="regError" class="error-msg">Ошибка регистрации. Возможно, логин занят.</div>
+    </div>
+
+    <script src="auth.js"></script>
+</body>
+</html>

@@ -70,4 +70,15 @@ public class AssetService {
         dto.setCreatedAt(asset.getCreatedAt());
         return dto;
     }
+    public AssetDTO updateAsset(Long id, AssetDTO dto) {
+        Asset asset = assetRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Asset not found"));
+
+        asset.setName(dto.getName());
+        asset.setType(dto.getType());
+        asset.setStatus(dto.getStatus());
+
+        Asset updated = assetRepository.save(asset);
+        return convertToDTO(updated);
+    }
 }

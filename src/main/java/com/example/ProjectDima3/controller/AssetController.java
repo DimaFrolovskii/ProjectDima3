@@ -24,4 +24,10 @@ public class AssetController {
     public ResponseEntity<AssetDTO> create(@Valid @RequestBody AssetDTO assetDto) {
         return new ResponseEntity<>(assetService.createAsset(assetDto), HttpStatus.CREATED);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<AssetDTO> update(@PathVariable Long id, @RequestBody AssetDTO dto) {
+        // В сервисе нужно будет реализовать метод updateAsset
+        return ResponseEntity.ok(assetService.updateAsset(id, dto));
+    }
 }
