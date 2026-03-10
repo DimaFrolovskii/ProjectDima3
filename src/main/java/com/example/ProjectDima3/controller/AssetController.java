@@ -1,6 +1,6 @@
 package com.example.ProjectDima3.controller;
 
-import com.example.ProjectDima3.entity.Asset;
+import com.example.ProjectDima3.dto.AssetDTO;
 import com.example.ProjectDima3.service.AssetService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,12 +16,12 @@ public class AssetController {
     private final AssetService assetService;
 
     @GetMapping("/facility/{facilityId}")
-    public ResponseEntity<List<Asset>> getByFacility(@PathVariable Long facilityId) {
+    public ResponseEntity<List<AssetDTO>> getByFacility(@PathVariable Long facilityId) {
         return ResponseEntity.ok(assetService.getAssetsByFacility(facilityId));
     }
 
     @PostMapping
-    public ResponseEntity<Asset> create(@Valid @RequestBody Asset asset) {
-        return new ResponseEntity<>(assetService.createAsset(asset), HttpStatus.CREATED);
+    public ResponseEntity<AssetDTO> create(@Valid @RequestBody AssetDTO assetDto) {
+        return new ResponseEntity<>(assetService.createAsset(assetDto), HttpStatus.CREATED);
     }
 }
