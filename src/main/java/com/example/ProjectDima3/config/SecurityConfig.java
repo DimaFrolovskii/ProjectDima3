@@ -27,13 +27,18 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        http
+                .csrf(csrf -> csrf.disable()) // Отключаем для тестов, чтобы не было 403 на POST запросы
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll() // Доступ к регистрации и логину
-                        .anyRequest().authenticated()
+                        .requestMatchers("/auth/**", "/login", "/register", "/css/**", "/js/**").permitAll() // Разрешаем всем
+                        .anyRequest().authenticated() // Все остальное только после входа
+                )
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/index", true)
+                        .permitAll()
                 );
-        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
