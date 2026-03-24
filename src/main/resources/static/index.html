@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Авторизация - ProjectDima3</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .login-container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 24px;
+            color: #1c1e21;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            margin-top: 5px;
+            border: 1px solid #dddfe2;
+            border-radius: 8px;
+            background-color: #f5f6f7;
+            font-size: 15px;
+            color: #1c1e21;
+            box-sizing: border-box; /* Важно, чтобы padding не ломал ширину */
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #28a745;
+            background-color: white;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background-color: #28a745; /* Твой зеленый цвет */
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            margin-top: 10px;
+        }
+
+        .login-button:hover {
+            background-color: #218838;
+        }
+
+        /* Стиль для блока регистрации */
+        .register-link-container {
+            margin-top: 25px;
+            font-size: 14px;
+            color: #606770;
+            border-top: 1px solid #dddfe2;
+            padding-top: 15px;
+        }
+
+        .register-link {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 500;
+            margin-left: 5px;
+        }
+
+        .register-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <h2>Авторизация</h2>
+
+    <form action="/login" method="post">
+        <div class="input-group">
+            <input type="text" name="username" placeholder="Логин" required>
+        </div>
+
+        <div class="input-group">
+            <input type="password" name="password" placeholder="Пароль" required>
+        </div>
+
+        <button type="submit" class="login-button">Войти</button>
+    </form>
+
+    <div class="register-link-container">
+        Нет аккаунта?
+        <a href="register.html" class="register-link">Зарегистрироваться</a>
+    </div>
+</div>
+
+</body>
+</html>

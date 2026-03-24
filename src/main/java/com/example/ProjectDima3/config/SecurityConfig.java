@@ -30,11 +30,11 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // Отключаем для тестов, чтобы не было 403 на POST запросы
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/login", "/register", "/css/**", "/js/**").permitAll() // Разрешаем всем
+                        .requestMatchers("/*.html", "/*.js", "/*.css", "/auth/**").permitAll()
                         .anyRequest().authenticated() // Все остальное только после входа
                 )
                 .formLogin(form -> form
-                        .loginPage("/login")
+                        .loginPage("/register")
                         .defaultSuccessUrl("/index", true)
                         .permitAll()
                 );
