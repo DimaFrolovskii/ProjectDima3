@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Авторизация - ProjectDima3</title>
     <link rel="stylesheet" href="style.css">
-
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -101,23 +100,20 @@
 <div class="login-container">
     <h2>Авторизация</h2>
 
-    <form action="/login" method="post">
-        <div class="input-group">
-            <input type="text" name="username" placeholder="Логин" required>
-        </div>
+    <div id="error"></div>
 
-        <div class="input-group">
-            <input type="password" name="password" placeholder="Пароль" required>
-        </div>
-
+    <form onsubmit="event.preventDefault(); login();">
+        <input type="text" id="username" placeholder="Логин" required>
+        <input type="password" id="password" placeholder="Пароль" required>
         <button type="submit" class="login-button">Войти</button>
     </form>
 
     <div class="register-link-container">
-        Нет аккаунта?
-        <a href="register.html" class="register-link">Зарегистрироваться</a>
+        Нет аккаунта? <a href="register.html" class="register-link">Зарегистрироваться</a>
     </div>
 </div>
+
+<script src="auth.js"></script>
 
 </body>
 </html>

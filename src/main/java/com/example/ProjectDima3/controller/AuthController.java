@@ -4,8 +4,11 @@ import com.example.ProjectDima3.entity.User;
 import com.example.ProjectDima3.repository.UserRepository;
 import com.example.ProjectDima3.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -16,19 +19,30 @@ public class AuthController {
     private final JwtUtil jwtUtil;
 
     @PostMapping("/register")
-    public String register(@RequestBody User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword())); // Хешируем пароль
+    public ResponseEntity<?> register(@RequestBody User user) {
+        if (userRepository.existsByUsername(user.getUsername())) {
+            return ResponseEntity.badRequest().body("Пользователь уже существует");
+        }
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        if (user.getRole() == null || user.getRole().isEmpty()) {
+            user.setRole("ROLE_USER");
+        }
+
         userRepository.save(user);
-        return "Пользователь успешно зарегистрирован!";
+        return ResponseEntity.ok("Успешно");
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody User loginRequest) {
+    public ResponseEntity<?> login(@RequestBody User loginRequest) {
         User user = userRepository.findByUsername(loginRequest.getUsername())
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+
         if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            return jwtUtil.generateToken(user.getUsername()); // Выдаем JWT
+            String token = jwtUtil.generateToken(user.getUsername());
+            return ResponseEntity.ok(Map.of("token", token));
         }
-        throw new RuntimeException("Неверный пароль");
+        return ResponseEntity.status(401).body("Неверный пароль");
     }
 }

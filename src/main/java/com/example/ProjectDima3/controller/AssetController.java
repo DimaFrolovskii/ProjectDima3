@@ -15,9 +15,9 @@ import java.util.List;
 public class AssetController {
     private final AssetService assetService;
 
-    @GetMapping("/facility/{facilityId}")
-    public ResponseEntity<List<AssetDTO>> getByFacility(@PathVariable Long facilityId) {
-        return ResponseEntity.ok(assetService.getAssetsByFacility(facilityId));
+    @GetMapping
+    public ResponseEntity<List<AssetDTO>> getAll() {
+        return ResponseEntity.ok(assetService.getAllAssets());
     }
 
     @PostMapping
@@ -27,7 +27,12 @@ public class AssetController {
 
     @PutMapping("/{id}")
     public ResponseEntity<AssetDTO> update(@PathVariable Long id, @RequestBody AssetDTO dto) {
-        // В сервисе нужно будет реализовать метод updateAsset
         return ResponseEntity.ok(assetService.updateAsset(id, dto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        assetService.deleteAsset(id); // Реализуй удаление в сервисе
+        return ResponseEntity.noContent().build();
     }
 }
