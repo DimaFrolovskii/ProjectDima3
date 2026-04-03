@@ -12,4 +12,5 @@ public class AssetDTO {
     private String serialNumber;
     private String description;
     private LocalDateTime createdAt;
+    private Long facilityId;
 }

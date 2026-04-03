@@ -1,10 +1,10 @@
 const API_URL = 'http://localhost:8080/api/assets';
 
-// Функция получения всех активов
+// 1. ФУНКЦИЯ ЗАГРУЗКИ (ИСПРАВЛЕНА ПОД ПАГИНАЦИЮ)
 async function loadAssets() {
     const token = localStorage.getItem('token');
     if (!token) {
-        window.location.href = 'index.html'; // Если нет токена — на вход
+        window.location.href = 'index.html';
         return;
     }
 
@@ -14,12 +14,18 @@ async function loadAssets() {
         });
 
         if (response.status === 403 || response.status === 401) {
-            logout(); // Токен протух или неверный
+            logout();
             return;
         }
 
-        const assets = await response.json();
+        const data = await response.json();
+
+        // КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: берём данные из поля content
+        const assets = data.content || [];
+
         const tbody = document.getElementById('assetsBody');
+        if (!tbody) return;
+
         tbody.innerHTML = '';
 
         assets.forEach(asset => {
@@ -30,12 +36,11 @@ async function loadAssets() {
                     <td>${asset.type}</td>
                     <td>${asset.status}</td>
                     <td>
-                        <button onclick="prepareEdit(${asset.id}, '${asset.name}', '${asset.type}', '${asset.status}')" 
+                        <button onclick="prepareEdit(${asset.id}, '${asset.name}', '${asset.type}', '${asset.status}')"
                                 style="background:#ffc107; color:black; padding:5px; width:auto; margin-right:5px;">
                             Править
                         </button>
-                        
-                        <button onclick="deleteAsset(${asset.id})" 
+                        <button onclick="deleteAsset(${asset.id})"
                                 style="background:#dc3545; color:white; padding:5px; width:auto;">
                             Удалить
                         </button>
@@ -44,96 +49,86 @@ async function loadAssets() {
             `;
         });
     } catch (err) {
+        console.error("Ошибка:", err);
         alert("Ошибка при загрузке данных");
     }
 }
 
-// Функция добавления актива
-async function addAsset() {
-    const name = document.getElementById('assetName').value;
-    const type = document.getElementById('assetType').value;
-    const status = document.getElementById('assetStatus').value;
-    const token = localStorage.getItem('token');
-
-    const assetData = { name, type, status };
-
-    const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(assetData)
-    });
-
-    if (response.ok) {
-        loadAssets(); // Обновляем таблицу
-    } else {
-        alert("Ошибка при сохранении");
-    }
-}
-
-// Функция удаления
-async function deleteAsset(id) {
-    const token = localStorage.getItem('token');
-    if (!confirm("Удалить этот актив?")) return;
-
-    await fetch(`${API_URL}/${id}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` }
-    });
-    loadAssets();
-}
-
+// 2. ФУНКЦИЯ СОХРАНЕНИЯ (СОЗДАНИЕ И ОБНОВЛЕНИЕ)
 let editMode = false;
 let currentEditId = null;
 
-// Функция для заполнения формы данными из таблицы
-function prepareEdit(id, name, type, status) {
-    document.getElementById('assetName').value = name;
-    document.getElementById('assetType').value = type;
-    document.getElementById('assetStatus').value = status;
-    
-    editMode = true;
-    currentEditId = id;
-    
-    const btn = document.querySelector('.container button');
-    btn.textContent = "Сохранить изменения";
-    btn.style.background = "#ffc107"; // Желтый цвет для режима правки
-}
-
-// Изменяем функцию addAsset, чтобы она понимала, создаем мы или редактируем
 async function saveAsset() {
     const name = document.getElementById('assetName').value;
     const type = document.getElementById('assetType').value;
     const status = document.getElementById('assetStatus').value;
     const token = localStorage.getItem('token');
 
+    // Если ты добавил facilityId в AssetDTO, можно добавить его и сюда
     const assetData = { name, type, status };
-    
+
     let url = API_URL;
     let method = 'POST';
 
     if (editMode) {
         url = `${API_URL}/${currentEditId}`;
-        method = 'PUT'; // В бэкенде должен быть реализован @PutMapping
+        method = 'PUT';
     }
 
-    const response = await fetch(url, {
-        method: method,
-        headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(assetData)
-    });
+    try {
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(assetData)
+        });
 
-    if (response.ok) {
-        resetForm();
-        loadAssets();
-    } else {
-        alert("Ошибка при сохранении");
+        if (response.ok) {
+            resetForm();
+            loadAssets();
+        } else {
+            alert("Ошибка при сохранении");
+        }
+    } catch (err) {
+        alert("Проблема с соединением");
     }
+}
+
+// 3. ФУНКЦИЯ УДАЛЕНИЯ
+async function deleteAsset(id) {
+    const token = localStorage.getItem('token');
+    if (!confirm("Удалить этот актив?")) return;
+
+    try {
+        const response = await fetch(`${API_URL}/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+            loadAssets();
+        } else {
+            alert("Ошибка при удалении (возможно, недостаточно прав)");
+        }
+    } catch (err) {
+        alert("Ошибка сети");
+    }
+}
+
+// 4. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+function prepareEdit(id, name, type, status) {
+    document.getElementById('assetName').value = name;
+    document.getElementById('assetType').value = type;
+    document.getElementById('assetStatus').value = status;
+
+    editMode = true;
+    currentEditId = id;
+
+    const btn = document.querySelector('.container button');
+    btn.textContent = "Сохранить изменения";
+    btn.style.background = "#ffc107";
 }
 
 function resetForm() {
@@ -145,4 +140,9 @@ function resetForm() {
     const btn = document.querySelector('.container button');
     btn.textContent = "Создать";
     btn.style.background = "#28a745";
+}
+
+function logout() {
+    localStorage.removeItem('token');
+    window.location.href = 'index.html';
 }

@@ -2,63 +2,60 @@ package com.example.ProjectDima3.service;
 
 import com.example.ProjectDima3.dto.AssetDTO;
 import com.example.ProjectDima3.entity.Asset;
+import com.example.ProjectDima3.entity.Facility;
 import com.example.ProjectDima3.repository.AssetRepository;
-import lombok.Data;
+import com.example.ProjectDima3.repository.FacilityRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@Data
-
 public class AssetService {
 
     private final AssetRepository assetRepository;
+    private final FacilityRepository facilityRepository; //ManyToOne
 
-    public List<AssetDTO> getAllAssets() {
-        log.info("Запрос всех активов");
-        return assetRepository.findAll().stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+    //Логирование
+    @Transactional(readOnly = true)
+    public Page<AssetDTO> getAllAssets(Pageable pageable) {
+        log.info("Получение страницы активов: {}", pageable);
+        return assetRepository.findAll(pageable).map(this::convertToDTO);
     }
 
-    public List<AssetDTO> getAssetsByFacility(Long facilityId) {
-        log.info("Запрос активов для объекта с id: {}", facilityId);
-        return assetRepository.findByFacilityId(facilityId).stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
-    }
-
-    public AssetDTO getAssetById(Long id) {
-        log.info("Поиск актива по id: {}", id);
-        Asset asset = assetRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Asset not found"));
-        return convertToDTO(asset);
-    }
-
+    @Transactional
     public AssetDTO createAsset(AssetDTO dto) {
-        log.info("Добавление нового актива: {}", dto.getName());
+        log.info("Создание нового актива: {}", dto.getName());
         Asset asset = new Asset();
-        asset.setName(dto.getName());
-        asset.setType(dto.getType());
-        asset.setStatus(dto.getStatus());
-        asset.setSerialNumber(dto.getSerialNumber());
-        asset.setDescription(dto.getDescription());
-
-        Asset savedAsset = assetRepository.save(asset);
-        return convertToDTO(savedAsset);
+        mapDtoToEntity(dto, asset);
+        if (dto.getFacilityId() != null) {
+            Facility facility = facilityRepository.findById(dto.getFacilityId())
+                    .orElseThrow(() -> new RuntimeException("Объект не найден"));
+            asset.setFacility(facility);
+        }
+        return convertToDTO(assetRepository.save(asset));
     }
 
+    @Transactional
+    public AssetDTO updateAsset(Long id, AssetDTO dto) {
+        log.info("Обновление актива с ID: {}", id);
+        Asset asset = assetRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Актив не найден"));
+        mapDtoToEntity(dto, asset);
+        return convertToDTO(assetRepository.save(asset));
+    }
+
+    @Transactional
     public void deleteAsset(Long id) {
-        log.info("Удаление актива с id: {}", id);
+        log.error("Удаление актива с ID: {}", id);
         assetRepository.deleteById(id);
     }
 
-    // Вспомогательный метод для конвертации (Маппер)
+    // Вспомогательный маппер
     private AssetDTO convertToDTO(Asset asset) {
         AssetDTO dto = new AssetDTO();
         dto.setId(asset.getId());
@@ -67,18 +64,17 @@ public class AssetService {
         dto.setStatus(asset.getStatus());
         dto.setSerialNumber(asset.getSerialNumber());
         dto.setDescription(asset.getDescription());
-        dto.setCreatedAt(asset.getCreatedAt());
+        if (asset.getFacility() != null) {
+            dto.setFacilityId(asset.getFacility().getId());
+        }
         return dto;
     }
-    public AssetDTO updateAsset(Long id, AssetDTO dto) {
-        Asset asset = assetRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Asset not found"));
 
+    private void mapDtoToEntity(AssetDTO dto, Asset asset) {
         asset.setName(dto.getName());
         asset.setType(dto.getType());
         asset.setStatus(dto.getStatus());
-
-        Asset updated = assetRepository.save(asset);
-        return convertToDTO(updated);
+        asset.setSerialNumber(dto.getSerialNumber());
+        asset.setDescription(dto.getDescription());
     }
 }
