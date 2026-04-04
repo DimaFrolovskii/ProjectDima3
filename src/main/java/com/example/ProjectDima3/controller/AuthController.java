@@ -1,5 +1,6 @@
 package com.example.ProjectDima3.controller;
 
+import com.example.ProjectDima3.dto.AuthResponse; // Импортируй созданный DTO
 import com.example.ProjectDima3.entity.User;
 import com.example.ProjectDima3.repository.UserRepository;
 import com.example.ProjectDima3.security.JwtUtil;
@@ -7,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -23,11 +22,12 @@ public class AuthController {
         if (userRepository.existsByUsername(user.getUsername())) {
             return ResponseEntity.badRequest().body("Пользователь уже существует");
         }
-
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         if (user.getRole() == null || user.getRole().isEmpty()) {
             user.setRole("ROLE_USER");
+        } else if (!user.getRole().startsWith("ROLE_")) {
+            user.setRole("ROLE_" + user.getRole());
         }
 
         userRepository.save(user);
@@ -40,8 +40,10 @@ public class AuthController {
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
 
         if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            String token = jwtUtil.generateToken(user.getUsername());
-            return ResponseEntity.ok(Map.of("token", token));
+            String token = jwtUtil.generateToken(user.getUsername(), user.getRole());
+
+            String cleanRole = user.getRole().replace("ROLE_", "");
+            return ResponseEntity.ok(new AuthResponse(token, cleanRole));
         }
         return ResponseEntity.status(401).body("Неверный пароль");
     }

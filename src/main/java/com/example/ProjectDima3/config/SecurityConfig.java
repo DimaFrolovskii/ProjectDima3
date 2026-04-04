@@ -38,9 +38,11 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Явно разрешаем все файлы в корне static
-                        .requestMatchers("/", "/index.html", "/register.html", "/assets.html", "/auth.js", "/style.css", "/api.js").permitAll()
+                        .requestMatchers("/", "/index.html", "/register.html", "/assets.html", "/auth.js", "/api.js", "/style.css").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
+
+                        .requestMatchers("/api/assets/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
@@ -51,7 +53,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:8080", "http://127.0.0.1:8080", "http://localhost:5500"));
+        configuration.setAllowedOrigins(List.of("http://localhost:8080", "http://127.0.0.1:8080", "http://localhost:5500", "http://127.0.0.1:5500"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

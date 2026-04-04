@@ -1,8 +1,10 @@
 const API_URL = 'http://localhost:8080/api/assets';
 
-// 1. ФУНКЦИЯ ЗАГРУЗКИ (ИСПРАВЛЕНА ПОД ПАГИНАЦИЮ)
 async function loadAssets() {
     const token = localStorage.getItem('token');
+    // Получаем роль и приводим к верхнему регистру на всякий случай
+    const userRole = localStorage.getItem('userRole') ? localStorage.getItem('userRole').toUpperCase() : '';
+
     if (!token) {
         window.location.href = 'index.html';
         return;
@@ -14,21 +16,30 @@ async function loadAssets() {
         });
 
         if (response.status === 403 || response.status === 401) {
+            alert("Сессия истекла или недостаточно прав");
             logout();
             return;
         }
 
         const data = await response.json();
-
-        // КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: берём данные из поля content
         const assets = data.content || [];
 
         const tbody = document.getElementById('assetsBody');
         if (!tbody) return;
-
         tbody.innerHTML = '';
 
         assets.forEach(asset => {
+            // Проверяем роль. В базе может быть 'ADMIN' или 'ROLE_ADMIN'
+            let deleteBtn = '';
+            if (userRole === 'ADMIN' || userRole === 'ROLE_ADMIN') {
+                deleteBtn = `
+                    <button onclick="deleteAsset(${asset.id})"
+                            style="background:#dc3545; color:white; padding:5px; width:auto;">
+                        Удалить
+                    </button>
+                `;
+            }
+
             tbody.innerHTML += `
                 <tr>
                     <td>${asset.id}</td>
@@ -40,23 +51,15 @@ async function loadAssets() {
                                 style="background:#ffc107; color:black; padding:5px; width:auto; margin-right:5px;">
                             Править
                         </button>
-                        <button onclick="deleteAsset(${asset.id})"
-                                style="background:#dc3545; color:white; padding:5px; width:auto;">
-                            Удалить
-                        </button>
+                        ${deleteBtn}
                     </td>
                 </tr>
             `;
         });
     } catch (err) {
-        console.error("Ошибка:", err);
-        alert("Ошибка при загрузке данных");
+        console.error("Ошибка загрузки:", err);
     }
 }
-
-// 2. ФУНКЦИЯ СОХРАНЕНИЯ (СОЗДАНИЕ И ОБНОВЛЕНИЕ)
-let editMode = false;
-let currentEditId = null;
 
 async function saveAsset() {
     const name = document.getElementById('assetName').value;
@@ -64,9 +67,12 @@ async function saveAsset() {
     const status = document.getElementById('assetStatus').value;
     const token = localStorage.getItem('token');
 
-    // Если ты добавил facilityId в AssetDTO, можно добавить его и сюда
-    const assetData = { name, type, status };
+    if (!name || !type || !status) {
+        alert("Заполните все поля");
+        return;
+    }
 
+    const assetData = { name, type, status };
     let url = API_URL;
     let method = 'POST';
 
@@ -89,14 +95,14 @@ async function saveAsset() {
             resetForm();
             loadAssets();
         } else {
-            alert("Ошибка при сохранении");
+            const errData = await response.text();
+            alert("Ошибка сохранения: " + (response.status === 403 ? "Недостаточно прав" : errData));
         }
     } catch (err) {
-        alert("Проблема с соединением");
+        alert("Ошибка сети");
     }
 }
 
-// 3. ФУНКЦИЯ УДАЛЕНИЯ
 async function deleteAsset(id) {
     const token = localStorage.getItem('token');
     if (!confirm("Удалить этот актив?")) return;
@@ -109,26 +115,30 @@ async function deleteAsset(id) {
 
         if (response.ok) {
             loadAssets();
+        } else if (response.status === 403) {
+            alert("Ошибка: Только администратор может удалять активы.");
         } else {
-            alert("Ошибка при удалении (возможно, недостаточно прав)");
+            alert("Ошибка при удалении");
         }
     } catch (err) {
         alert("Ошибка сети");
     }
 }
 
-// 4. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+let editMode = false;
+let currentEditId = null;
+
 function prepareEdit(id, name, type, status) {
     document.getElementById('assetName').value = name;
     document.getElementById('assetType').value = type;
     document.getElementById('assetStatus').value = status;
-
     editMode = true;
     currentEditId = id;
-
     const btn = document.querySelector('.container button');
-    btn.textContent = "Сохранить изменения";
-    btn.style.background = "#ffc107";
+    if (btn) {
+        btn.textContent = "Сохранить изменения";
+        btn.style.background = "#ffc107";
+    }
 }
 
 function resetForm() {
@@ -138,11 +148,16 @@ function resetForm() {
     document.getElementById('assetType').value = '';
     document.getElementById('assetStatus').value = '';
     const btn = document.querySelector('.container button');
-    btn.textContent = "Создать";
-    btn.style.background = "#28a745";
+    if (btn) {
+        btn.textContent = "Создать";
+        btn.style.background = "#28a745";
+    }
 }
 
-function logout() {
-    localStorage.removeItem('token');
-    window.location.href = 'index.html';
+// Если функция logout не определена в другом месте
+if (typeof logout !== 'function') {
+    function logout() {
+        localStorage.clear();
+        window.location.href = 'index.html';
+    }
 }

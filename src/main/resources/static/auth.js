@@ -1,3 +1,5 @@
+// --- АВТОРИЗАЦИЯ И РЕГИСТРАЦИЯ ---
+
 async function login() {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
@@ -12,11 +14,13 @@ async function login() {
 
         if (response.ok) {
             const data = await response.json();
-            // ВАЖНО: сохраняем токен, который прислал сервер
+
+            // Сохраняем токен и роль для использования в api.js
             localStorage.setItem('token', data.token);
+            localStorage.setItem('userRole', data.role);
+
             window.location.href = 'assets.html';
         } else {
-            // Если 401 или 403 при логине - значит неверный пароль
             errorDiv.innerText = "Неверный логин или пароль";
             errorDiv.style.display = 'block';
         }
@@ -24,11 +28,6 @@ async function login() {
         console.error("Ошибка сети", err);
         alert("Бэкенд не отвечает!");
     }
-}
-
-function logout() {
-    localStorage.removeItem('token');
-    window.location.href = 'index.html';
 }
 
 async function register() {
@@ -56,24 +55,8 @@ async function register() {
     }
 }
 
-// Эту функцию вызывай на странице assets.html при загрузке (onload)
-async function fetchAssets() {
-    const token = localStorage.getItem('token');
-
-    const response = await fetch('http://localhost:8080/api/assets', { // Твой защищенный API
-        method: 'GET',
-        headers: {
-            'Authorization': 'Bearer ' + token, // ПЕРЕДАЕМ ТОКЕН ТУТ
-            'Content-Type': 'application/json'
-        }
-    });
-
-    if (response.status === 403) {
-        alert("Доступ запрещен. Войдите заново.");
-        window.location.href = 'index.html';
-    } else {
-        const data = await response.json();
-        console.log("Список активов:", data);
-        // Тут код отрисовки данных на странице
-    }
+function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userRole');
+    window.location.href = 'index.html';
 }
