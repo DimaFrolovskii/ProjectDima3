@@ -13,7 +13,7 @@ public class Facility {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name; // Название завода
+    private String name;
     private String address;
 
     @OneToMany(mappedBy = "facility", cascade = CascadeType.ALL)

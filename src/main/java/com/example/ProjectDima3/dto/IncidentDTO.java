@@ -8,8 +8,8 @@ public class IncidentDTO {
     private Long id;
     private String title;
     private String description;
-    private String priority; // Low, Medium, High, Critical
-    private String status;   // Open, In Progress, Resolved, Closed
-    private Long assetId;    // Передаем только ID актива, а не весь объект
+    private String priority;
+    private String status;
+    private Long assetId;
     private LocalDateTime reportedAt;
 }

@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    // Обработка ошибок валидации (@Valid) [cite: 49, 52]
+    // Обработка ошибок валидации (@Valid)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex) {
         log.error("Ошибка валидации: {}", ex.getMessage());
@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST); // Код 400
     }
 
-    // Обработка всех остальных исключений [cite: 52]
+    // Обработка всех остальных исключений
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex) {
         log.error("Внутренняя ошибка сервера: ", ex);

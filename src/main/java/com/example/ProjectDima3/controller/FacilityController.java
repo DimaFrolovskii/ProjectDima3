@@ -13,32 +13,32 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/facilities") // RESTful дизайн URL [cite: 32]
+@RequestMapping("/api/facilities")
 @RequiredArgsConstructor
 @Slf4j
 public class FacilityController {
 
     private final FacilityService facilityService;
 
-    @GetMapping // Эндпоинт 1: Получение всех объектов
+    @GetMapping
     public ResponseEntity<List<Facility>> getAll() {
         log.info("REST запрос на получение всех объектов");
-        return ResponseEntity.ok(facilityService.getAllFacilities()); // Код 200
+        return ResponseEntity.ok(facilityService.getAllFacilities());
     }
 
-    @PostMapping // Эндпоинт 2: Создание объекта
+    @PostMapping
     public ResponseEntity<Facility> create(@Valid @RequestBody Facility facility) {
         log.info("REST запрос на создание объекта: {}", facility.getName());
         Facility saved = facilityService.createFacility(facility);
-        return new ResponseEntity<>(saved, HttpStatus.CREATED); // Код 201
+        return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/{id}")// Эндпоинт 3: Удаление
+    @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         log.info("REST запрос на удаление объекта id: {}", id);
         facilityService.deleteFacility(id);
-        return ResponseEntity.noContent().build(); // Код 204
+        return ResponseEntity.noContent().build();
     }
 
 }

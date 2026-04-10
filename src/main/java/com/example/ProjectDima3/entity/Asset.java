@@ -28,7 +28,6 @@ public class Asset {
     @OneToMany(mappedBy = "asset", cascade = CascadeType.ALL)
     private List<Incident> incidents;
 
-    // Автоматическая установка даты создания
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();

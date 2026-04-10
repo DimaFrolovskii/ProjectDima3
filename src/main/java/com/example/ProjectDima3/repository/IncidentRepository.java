@@ -8,7 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface IncidentRepository extends JpaRepository<Incident, Long> {
-    // Query Method 4 + Pagination: Найти все инциденты для актива с пагинацией
-    //(п. 2.5 и 2.6)
     Page<Incident> findByAssetId(Long assetId, Pageable pageable);
 }

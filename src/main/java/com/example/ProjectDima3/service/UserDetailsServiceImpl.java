@@ -23,7 +23,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден: " + username));
 
         String role = user.getRole();
-        // Если в базе роль без префикса (например "USER"), добавляем его
         if (role != null && !role.startsWith("ROLE_")) {
             role = "ROLE_" + role;
         }

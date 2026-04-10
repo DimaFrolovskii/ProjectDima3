@@ -1,6 +1,6 @@
 package com.example.ProjectDima3.controller;
 
-import com.example.ProjectDima3.dto.AuthResponse; // Импортируй созданный DTO
+import com.example.ProjectDima3.dto.AuthResponse;
 import com.example.ProjectDima3.entity.User;
 import com.example.ProjectDima3.repository.UserRepository;
 import com.example.ProjectDima3.security.JwtUtil;

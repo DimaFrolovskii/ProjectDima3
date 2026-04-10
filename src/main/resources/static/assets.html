@@ -4,41 +4,44 @@
     <meta charset="UTF-8">
     <title>Управление активами</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <nav style="width: 100%; background: #333; color: white; padding: 10px; display: flex; justify-content: space-around;">
-        <span>ProjectDima3: Assets</span>
-        <button onclick="logout()" style="width: auto; background: #dc3545;">Выйти</button>
-    </nav>
+<nav>
+    <span>ProjectDima3: Assets</span>
+    <button onclick="logout()" class="logout-btn">Выйти</button>
+</nav>
 
-    <div class="container" style="width: 80%; max-width: 900px;">
-        <h3>Добавить новый актив</h3>
-        <div style="display: flex; gap: 10px;">
-            <input type="text" id="assetName" placeholder="Название">
-            <input type="text" id="assetType" placeholder="Тип (например, Сервер)">
-            <input type="text" id="assetStatus" placeholder="Статус (Работает)">
-            <button onclick="saveAsset()" style="width: 150px;">Создать</button>
-        </div>
+<div class="container">
+    <h3>Добавить новый актив</h3>
+    <div class="form-grid">
+        <input type="text" id="assetName" placeholder="Название">
+        <input type="text" id="assetType" placeholder="Тип (например, Сервер)">
+        <input type="text" id="assetStatus" placeholder="Статус (Работает)">
+        <button onclick="saveAsset()">Создать актив</button>
     </div>
+</div>
 
+<div class="table-container">
     <table id="assetsTable">
         <thead>
-            <tr>
-                <th>ID</th>
-                <th>Название</th>
-                <th>Тип</th>
-                <th>Статус</th>
-                <th>Действия</th>
-            </tr>
+        <tr>
+            <th>ID</th>
+            <th>Название</th>
+            <th>Тип</th>
+            <th>Статус</th>
+            <th style="text-align: right;">Действия</th>
+        </tr>
         </thead>
         <tbody id="assetsBody">
-            </tbody>
+        </tbody>
     </table>
+</div>
 
-    <script src="auth.js"></script>
-    <script src="api.js"></script>
-    <script>
-        window.onload = loadAssets;
-    </script>
+<script src="auth.js"></script>
+<script src="api.js"></script>
+<script>
+    window.onload = loadAssets;
+</script>
 </body>
 </html>

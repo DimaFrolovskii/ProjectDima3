@@ -15,14 +15,13 @@ import org.springframework.web.bind.annotation.*;
 public class IncidentController {
     private final IncidentService incidentService;
 
-    // Пример вызова: /api/incidents/asset/1?page=0&size=5
     @GetMapping("/asset/{assetId}")
     public ResponseEntity<Page<Incident>> getByAsset(@PathVariable Long assetId, Pageable pageable) {
         return ResponseEntity.ok(incidentService.getIncidentsByAsset(assetId, pageable));
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'OPERATOR')") // Инциденты пишет дежурный или админ
+    @PreAuthorize("hasAnyRole('ADMIN', 'OPERATOR')")
     public ResponseEntity<Incident> create(@RequestBody Incident incident) {
         return ResponseEntity.status(201).body(incidentService.reportIncident(incident));
     }

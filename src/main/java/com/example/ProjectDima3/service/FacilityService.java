@@ -11,24 +11,24 @@ import java.util.List;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor // Автоматический конструктор
+@RequiredArgsConstructor
 public class FacilityService {
 
     private final FacilityRepository facilityRepository;
 
     public List<Facility> getAllFacilities() {
-        log.info("Запрос списка всех объектов КИИ"); // INFO
+        log.info("Запрос списка всех объектов КИИ");
         return facilityRepository.findAll();
     }
 
     @Transactional
     public Facility createFacility(Facility facility) {
-        log.debug("Сохранение нового объекта: {}", facility.getName()); // DEBUG
+        log.debug("Сохранение нового объекта: {}", facility.getName());
         return facilityRepository.save(facility);
     }
 
     public void deleteFacility(Long id) {
-        log.warn("Удаление объекта с id: {}", id); // Логирование важных операций
+        log.warn("Удаление объекта с id: {}", id);
         facilityRepository.deleteById(id);
     }
 }
