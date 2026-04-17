@@ -1,6 +1,8 @@
 package com.example.ProjectDima3.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import java.time.LocalDateTime; // Не забудьте импорт
 import java.util.List;
@@ -14,9 +16,14 @@ public class Asset {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotBlank(message = "Название обязательно")
+    @Size(min = 2, max = 100)
     private String name;
+    @NotBlank(message = "Тип обязателен")
     private String type;
     private String status;
+    @Column(unique = true)
     private String serialNumber;
     private String description;
     private LocalDateTime createdAt;
