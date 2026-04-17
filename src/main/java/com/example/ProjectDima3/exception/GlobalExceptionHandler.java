@@ -8,6 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import java.time.LocalDateTime;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 
 @ControllerAdvice
 @Slf4j
@@ -35,5 +36,17 @@ public class GlobalExceptionHandler {
                 ex.getMessage()
         );
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR); // Код 500
+    }
+
+    //для тестирования
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAuthorizationDeniedException(AuthorizationDeniedException ex) {
+        log.error("Доступ запрещен: {}", ex.getMessage());
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                "Доступ запрещен",
+                "У вас нет прав для выполнения этой операции (требуется роль ADMIN)"
+        );
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 }
