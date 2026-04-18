@@ -4,19 +4,26 @@
 
 
 ### 🛠 Стек
-### Backend: ### Java 17, Spring Boot 3.x (Spring Web, Spring Data JPA, Validation).
+### Backend: ### 
+Java 17, Spring Boot 3.x (Spring Web, Spring Data JPA, Validation).
 
-### Security: ### Spring Security, JWT (JSON Web Token).
+### Security: ###
+Spring Security, JWT (JSON Web Token).
 
-### Database: ### PostgreSQL, PostgreSQL Driver.
+### Database: ### 
+PostgreSQL, PostgreSQL Driver.
 
-### Migrations: ### Flyway.
+### Migrations: ### 
+Flyway.
 
-### Utilities: ### Lombok.
+### Utilities: ### 
+Lombok.
 
-### Testing ###: JUnit 5, Mockito, Spring Boot Test, Spring Security Test, WebMvcTest.
+### Testing ###:
+JUnit 5, Mockito, Spring Boot Test, Spring Security Test, WebMvcTest.
 
-### DevOps: ###  Docker & Docker Compose.
+### DevOps: ###
+Docker & Docker Compose.
 
 
 ### 🚀 Функционал
