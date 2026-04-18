@@ -1,22 +1,22 @@
 # 🌟 ProjectDima3 🌟
 ## :bangbang: Мой проект по учебе на 3м курсе :bangbang: 
-##цифровая система для защиты и учета важного оборудования на государственных или промышленных объектах##
+## цифровая система для защиты и учета важного оборудования на государственных или промышленных объектах ##
 
 
 ### 🛠 Стек
-Java 17
-Spring Web (для REST API)PostgreSQL
- Spring Data JPA (для работы с БД)
- PostgreSQL
-  PostgreSQL Driver 
-  Spring Security (защита)
-  JWT
-  Validation (аннотации @Valid)
- Lombok (чтобы не писать геттеры/сеттеры вручную)
-flyway  (для миграций)
-Spring Boot Test (для тестов)
-Spring Security Test (для защищенных тестов)
-Validation & WebMVC Test ( для проверки логики )
+### Backend: ### Java 17, Spring Boot 3.x (Spring Web, Spring Data JPA, Validation).
+
+### Security: ### Spring Security, JWT (JSON Web Token).
+
+### Database: ### PostgreSQL, PostgreSQL Driver.
+
+### Migrations: ### Flyway.
+
+### Utilities: ### Lombok.
+
+### Testing ###: JUnit 5, Mockito, Spring Boot Test, Spring Security Test, WebMvcTest.
+
+### DevOps: ###  Docker & Docker Compose.
 
 
 ### 🚀 Функционал
