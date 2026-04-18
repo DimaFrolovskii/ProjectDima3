@@ -19,7 +19,7 @@ Flyway.
 ### Utilities: ### 
 Lombok.
 
-### Testing ###:
+### Testing: ###
 JUnit 5, Mockito, Spring Boot Test, Spring Security Test, WebMvcTest.
 
 ### DevOps: ###
