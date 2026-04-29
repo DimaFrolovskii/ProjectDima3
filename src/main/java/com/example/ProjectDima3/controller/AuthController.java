@@ -4,6 +4,8 @@ import com.example.ProjectDima3.dto.AuthResponse;
 import com.example.ProjectDima3.entity.User;
 import com.example.ProjectDima3.repository.UserRepository;
 import com.example.ProjectDima3.security.JwtUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,6 +19,8 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
+    @Operation(summary = "Попытка регестрации")
+    @SecurityRequirement(name = "bearer-jwt")
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User user) {
         if (userRepository.existsByUsername(user.getUsername())) {
@@ -34,6 +38,8 @@ public class AuthController {
         return ResponseEntity.ok("Успешно");
     }
 
+    @Operation(summary = "Попытка входа")
+    @SecurityRequirement(name = "bearer-jwt")
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User loginRequest) {
         User user = userRepository.findByUsername(loginRequest.getUsername())

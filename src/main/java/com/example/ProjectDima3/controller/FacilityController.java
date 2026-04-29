@@ -2,6 +2,8 @@ package com.example.ProjectDima3.controller;
 
 import com.example.ProjectDima3.entity.Facility;
 import com.example.ProjectDima3.service.FacilityService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,12 +22,16 @@ public class FacilityController {
 
     private final FacilityService facilityService;
 
+    @Operation(summary = "Получить все объекты")
+    @SecurityRequirement(name = "bearer-jwt")
     @GetMapping
     public ResponseEntity<List<Facility>> getAll() {
         log.info("REST запрос на получение всех объектов");
         return ResponseEntity.ok(facilityService.getAllFacilities());
     }
 
+    @Operation(summary = "Создать объект")
+    @SecurityRequirement(name = "bearer-jwt")
     @PostMapping
     public ResponseEntity<Facility> create(@Valid @RequestBody Facility facility) {
         log.info("REST запрос на создание объекта: {}", facility.getName());
@@ -33,6 +39,8 @@ public class FacilityController {
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
+    @Operation(summary = "Удалить объект")
+    @SecurityRequirement(name = "bearer-jwt")
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
