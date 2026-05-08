@@ -21,6 +21,12 @@ public class FacilityService {
         return facilityRepository.findAll();
     }
 
+    public Facility getFacilityById(Long id) {
+        log.info("Запрос объекта КИИ по ID: {}", id);
+        return facilityRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Facility not found"));
+    }
+
     @Transactional
     public Facility createFacility(Facility facility) {
         log.debug("Сохранение нового объекта: {}", facility.getName());

@@ -28,7 +28,10 @@ public class AuthController {
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        if (user.getRole() == null || user.getRole().isEmpty()) {
+        // Устанавливаем роль по умолчанию или роль админа
+        if ("admin".equalsIgnoreCase(user.getUsername())) {
+            user.setRole("ROLE_ADMIN");
+        } else if (user.getRole() == null || user.getRole().isEmpty()) {
             user.setRole("ROLE_USER");
         } else if (!user.getRole().startsWith("ROLE_")) {
             user.setRole("ROLE_" + user.getRole());

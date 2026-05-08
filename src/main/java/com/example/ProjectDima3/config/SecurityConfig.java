@@ -38,12 +38,9 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/index.html", "/register.html", "/assets.html", "/auth.js", "/api.js", "/style.css").permitAll()
+                        .requestMatchers("/", "/index.html", "/register.html", "/assets.html", "/admin.html", "/auth.js", "/api.js", "/style.css").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
-
-                        .requestMatchers("/api/assets/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-                        .requestMatchers("/v3/api-docs/**").permitAll()
-                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

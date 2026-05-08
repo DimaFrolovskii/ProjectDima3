@@ -32,6 +32,13 @@ public class FacilityController {
         return ResponseEntity.ok(facilityService.getAllFacilities());
     }
 
+    @Operation(summary = "Получить объект по ID")
+    @SecurityRequirement(name = "bearer-jwt")
+    @GetMapping("/{id}")
+    public ResponseEntity<Facility> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(facilityService.getFacilityById(id));
+    }
+
     @Operation(summary = "Создать объект")
     @SecurityRequirement(name = "bearer-jwt")
     @PostMapping

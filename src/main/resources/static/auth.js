@@ -6,7 +6,7 @@ async function login() {
     const errorDiv = document.getElementById('error');
 
     try {
-        const response = await fetch('http://localhost:8080/api/auth/login', {
+        const response = await fetch('/api/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password })
@@ -15,11 +15,15 @@ async function login() {
         if (response.ok) {
             const data = await response.json();
 
-            // Сохраняем токен и роль для использования в api.js
             localStorage.setItem('token', data.token);
             localStorage.setItem('userRole', data.role);
 
-            window.location.href = 'assets.html';
+            // Перенаправляем в зависимости от роли
+            if (data.role === 'ROLE_ADMIN' || data.role === 'ADMIN') {
+                window.location.href = 'admin.html';
+            } else {
+                window.location.href = 'assets.html';
+            }
         } else {
             errorDiv.innerText = "Неверный логин или пароль";
             errorDiv.style.display = 'block';
@@ -37,7 +41,7 @@ async function register() {
     const errorDiv = document.getElementById('regError');
 
     try {
-        const response = await fetch('http://localhost:8080/api/auth/register', {
+        const response = await fetch('/api/auth/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, email, password })

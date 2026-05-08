@@ -4,6 +4,7 @@ import com.example.ProjectDima3.dto.AssetDTO;
 import com.example.ProjectDima3.service.AssetService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/assets")
 @RequiredArgsConstructor
+@Tag(name = "Assets", description = "API для управления активами")
 public class AssetController {
 
     private final AssetService assetService;
@@ -29,6 +31,14 @@ public class AssetController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(assetService.getAllAssets(PageRequest.of(page, size)));
+    }
+
+    @Operation(summary = "Получить актив по ID")
+    @SecurityRequirement(name = "bearer-jwt")
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ResponseEntity<AssetDTO> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(assetService.getAssetById(id));
     }
 
     @Operation(summary = "создать актив")

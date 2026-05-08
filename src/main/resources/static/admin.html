@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Панель администратора</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+<nav>
+    <span>ProjectDima3: Admin Panel</span>
+    <div>
+        <a href="/assets.html" class="nav-link">Активы</a>
+        <button onclick="logout()" class="logout-btn">Выйти</button>
+    </div>
+</nav>
+
+<div class="container">
+    <h3>Статистика</h3>
+    <div class="stats-container">
+        <div class="stat-card">
+            <h4>Всего пользователей</h4>
+            <p id="totalUsers">0</p>
+        </div>
+        <div class="stat-card">
+            <h4>Всего активов</h4>
+            <p id="totalAssets">0</p>
+        </div>
+        <div class="stat-card">
+            <h4>Всего компаний</h4>
+            <p id="totalCompanies">0</p>
+        </div>
+        <div class="stat-card">
+            <h4>Всего отделов</h4>
+            <p id="totalDepartments">0</p>
+        </div>
+    </div>
+
+    <h3>Пользователи</h3>
+</div>
+
+<div class="table-container">
+    <table id="usersTable">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Имя пользователя</th>
+            <th>Роль</th>
+            <th>Компания</th>
+            <th>Отдел</th>
+            <th style="text-align: right;">Действия</th>
+        </tr>
+        </thead>
+        <tbody id="usersBody">
+        </tbody>
+    </table>
+</div>
+
+<!-- Модальное окно для информации о пользователе -->
+<div id="userModal" class="modal">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h4 id="modalUserName"></h4>
+        <div class="form-grid">
+            <p><strong>ID:</strong> <span id="modalUserId"></span></p>
+            <p><strong>Роль:</strong> <span id="modalUserRole"></span></p>
+        </div>
+        <hr>
+        <h5>Назначение</h5>
+        <input type="hidden" id="userIdToAssign">
+        <div class="form-grid">
+            <select id="companySelect"></select>
+            <select id="departmentSelect"></select>
+        </div>
+        <button onclick="assignUser()">Сохранить</button>
+    </div>
+</div>
+
+<script src="auth.js"></script>
+<script src="api.js"></script>
+<script>
+    window.onload = function() {
+        loadUsers();
+        loadStats();
+    };
+
+    const userModal = document.getElementById('userModal');
+    const closeButton = userModal.querySelector('.close-button');
+
+    closeButton.onclick = function() {
+        userModal.style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+        if (event.target == userModal) {
+            userModal.style.display = 'none';
+        }
+    }
+</script>
+</body>
+</html>

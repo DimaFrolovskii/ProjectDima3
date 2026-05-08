@@ -26,6 +26,14 @@ public class AssetService {
         return assetRepository.findAll(pageable).map(AssetDTO::fromEntity);
     }
 
+    @Transactional(readOnly = true)
+    public AssetDTO getAssetById(Long id) {
+        log.info("Получение актива по ID: {}", id);
+        return assetRepository.findById(id)
+                .map(AssetDTO::fromEntity)
+                .orElseThrow(() -> new RuntimeException("Актив не найден"));
+    }
+
     @Transactional
     public AssetDTO createAsset(AssetDTO dto) {
         log.info("Создание нового актива: {}", dto.getName());

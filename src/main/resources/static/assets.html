@@ -9,16 +9,16 @@
 <body>
 <nav>
     <span>ProjectDima3: Assets</span>
-    <button onclick="logout()" class="logout-btn">Выйти</button>
+    <div>
+        <a href="/admin.html" class="nav-link">Админ-панель</a>
+        <button onclick="logout()" class="logout-btn">Выйти</button>
+    </div>
 </nav>
 
 <div class="container">
-    <h3>Добавить новый актив</h3>
-    <div class="form-grid">
-        <input type="text" id="assetName" placeholder="Название">
-        <input type="text" id="assetType" placeholder="Тип (например, Сервер)">
-        <input type="text" id="assetStatus" placeholder="Статус (Работает)">
-        <button onclick="saveAsset()">Создать актив</button>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3>Активы</h3>
+        <button onclick="openAssetModal(null)">Создать актив</button>
     </div>
 </div>
 
@@ -38,10 +38,41 @@
     </table>
 </div>
 
+<!-- Модальное окно для активов -->
+<div id="assetModal" class="modal">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h4 id="assetModalTitle">Создать актив</h4>
+        <form id="assetForm">
+            <input type="hidden" id="assetId">
+            <div class="form-grid">
+                <input type="text" id="assetName" placeholder="Название актива" required>
+                <input type="text" id="assetType" placeholder="Тип актива" required>
+                <input type="text" id="assetStatus" placeholder="Статус актива" required>
+            </div>
+            <button type="button" onclick="saveAsset()">Сохранить</button>
+            <button type="button" id="deleteAssetBtn" class="danger-btn" onclick="deleteAsset()" style="display: none;">Удалить</button>
+        </form>
+    </div>
+</div>
+
 <script src="auth.js"></script>
 <script src="api.js"></script>
 <script>
     window.onload = loadAssets;
+
+    const assetModal = document.getElementById('assetModal');
+    const closeButton = assetModal.querySelector('.close-button');
+
+    closeButton.onclick = function() {
+        assetModal.style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+        if (event.target == assetModal) {
+            assetModal.style.display = 'none';
+        }
+    }
 </script>
 </body>
 </html>
