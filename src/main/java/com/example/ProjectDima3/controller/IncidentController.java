@@ -4,6 +4,7 @@ import com.example.ProjectDima3.entity.Incident;
 import com.example.ProjectDima3.service.IncidentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/incidents")
 @RequiredArgsConstructor
+@Tag(name = "Incidents", description = "API для управления инцидентами")
 public class IncidentController {
     private final IncidentService incidentService;
 

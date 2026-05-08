@@ -21,4 +21,12 @@ public class User {
     @Column(nullable = false)
     private String password;
     private String role = "ROLE_USER";
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_id")
+    private Company company;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id")
+    private Department department;
 }
