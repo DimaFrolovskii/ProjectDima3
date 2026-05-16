@@ -6,6 +6,7 @@ import com.example.ProjectDima3.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid; // Импорт для валидации
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,7 +34,11 @@ public class UserController {
     @SecurityRequirement(name = "bearer-jwt")
     @PostMapping("/{userId}/assign")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<User> assignUser(@PathVariable Long userId, @RequestBody UserAssignmentDto assignmentDto) {
+    // ДОБАВЛЕНО: @Valid перед @RequestBody
+    public ResponseEntity<User> assignUser(
+            @PathVariable Long userId,
+            @Valid @RequestBody UserAssignmentDto assignmentDto) {
+
         User updatedUser = userService.assignUser(userId, assignmentDto);
         return ResponseEntity.ok(updatedUser);
     }

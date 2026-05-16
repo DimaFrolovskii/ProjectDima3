@@ -1,12 +1,15 @@
 package com.example.ProjectDima3.dto;
 
 import com.example.ProjectDima3.entity.Asset;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
 public class AssetDTO {
     private Long id;
+
+    @NotBlank(message = "Имя актива не может быть пустым")
     private String name;
     private String type;
     private String status;

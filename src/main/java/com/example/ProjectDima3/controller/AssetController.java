@@ -67,4 +67,5 @@ public class AssetController {
         assetService.deleteAsset(id);
         return ResponseEntity.noContent().build();
     }
+
 }

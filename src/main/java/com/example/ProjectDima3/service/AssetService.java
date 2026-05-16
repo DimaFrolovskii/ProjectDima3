@@ -3,6 +3,7 @@ package com.example.ProjectDima3.service;
 import com.example.ProjectDima3.dto.AssetDTO;
 import com.example.ProjectDima3.entity.Asset;
 import com.example.ProjectDima3.entity.Facility;
+import com.example.ProjectDima3.exception.ResourceNotFoundException;
 import com.example.ProjectDima3.repository.AssetRepository;
 import com.example.ProjectDima3.repository.FacilityRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,7 @@ public class AssetService {
         log.info("Получение актива по ID: {}", id);
         return assetRepository.findById(id)
                 .map(AssetDTO::fromEntity)
-                .orElseThrow(() -> new RuntimeException("Актив не найден"));
+                .orElseThrow(() -> new ResourceNotFoundException("Актив не найден"));
     }
 
     @Transactional
@@ -43,7 +44,7 @@ public class AssetService {
 
         if (dto.getFacilityId() != null) {
             Facility facility = facilityRepository.findById(dto.getFacilityId())
-                    .orElseThrow(() -> new RuntimeException("Объект не найден"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Объект не найден"));
             asset.setFacility(facility);
         }
 
@@ -54,7 +55,7 @@ public class AssetService {
     public AssetDTO updateAsset(Long id, AssetDTO dto) {
         log.info("Обновление актива с ID: {}", id);
         Asset asset = assetRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Актив не найден"));
+                .orElseThrow(() -> new ResourceNotFoundException("Актив не найден"));
         dto.updateEntity(asset);
 
         return AssetDTO.fromEntity(assetRepository.save(asset));
