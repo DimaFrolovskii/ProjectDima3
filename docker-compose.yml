@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  # 1. Сервер базы данных
+  postgres-db:
+    image: postgres:15-alpine
+    container_name: postgres-db-container
+    environment:
+      POSTGRES_DB: project_dima_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+    ports:
+      - "5432:5432" # Чтобы вы могли подключиться к базе из IDEA, если нужно
+    networks:
+      - dima-network
+    restart: unless-stopped
+
+  # 2. Ваше Java-приложение
+  java-app:
+    build: .
+    container_name: java-app-container
+    ports:
+      - "8080:8080"
+    environment:
+      # ПЕРЕОПРЕДЕЛЯЕМ URL БАЗЫ ДАННЫХ: меняем localhost на имя контейнера базы данных!
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/project_dima_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=12345
+    networks:
+      - dima-network
+    depends_on:
+      - postgres-db
+    restart: unless-stopped
+
+  # 3. Сборщик метрик Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus-container
+    ports:
+      - "9090:9090" # Порт Prometheus для вашей Windows
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - dima-network
+    restart: unless-stopped
+
+networks:
+  dima-network:
+    driver: bridge
+
+volumes:
+  prometheus-data:

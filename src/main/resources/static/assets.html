@@ -10,7 +10,7 @@
 <nav>
     <span>ProjectDima3: Assets</span>
     <div>
-        <a href="/admin.html" class="nav-link">Админ-панель</a>
+        <a href="/admin.html" id="admin-panel-link" class="nav-link">Админ-панель</a>
         <button onclick="logout()" class="logout-btn">Выйти</button>
     </div>
 </nav>
@@ -59,7 +59,17 @@
 <script src="auth.js"></script>
 <script src="api.js"></script>
 <script>
-    window.onload = loadAssets;
+    window.onload = function() {
+        loadAssets();
+
+        const userRole = localStorage.getItem('userRole');
+        const adminLink = document.getElementById('admin-panel-link');
+        if (userRole !== 'ROLE_ADMIN' && userRole !== 'ADMIN') {
+            if (adminLink) {
+                adminLink.style.display = 'none';
+            }
+        }
+    };
 
     const assetModal = document.getElementById('assetModal');
     const closeButton = assetModal.querySelector('.close-button');

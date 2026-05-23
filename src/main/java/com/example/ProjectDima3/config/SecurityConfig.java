@@ -39,7 +39,8 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/index.html", "/register.html", "/assets.html", "/admin.html", "/auth.js", "/api.js", "/style.css").permitAll()
+                        //Девопс
+                        .requestMatchers("/", "/index.html", "/register.html", "/assets.html", "/admin.html", "/auth.js", "/api.js", "/style.css", "/actuator/prometheus").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
                         .anyRequest().authenticated()
@@ -65,4 +66,6 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
+
+
 }
