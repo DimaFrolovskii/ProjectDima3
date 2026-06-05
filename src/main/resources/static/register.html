@@ -1,23 +1,34 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" class="light-theme">
 <head>
     <meta charset="UTF-8">
-    <title>Регистрация</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация - ProjectDima3</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <script src="theme.js"></script>
 </head>
-<body>
-    <div class="container">
-        <h2>Регистрация нового пользователя</h2>
-        <input type="text" id="regUsername" placeholder="Придумайте логин">
-        <input type="email" id="regEmail" placeholder="Ваш Email">
-        <input type="password" id="regPassword" placeholder="Придумайте пароль">
-        <button onclick="register()" style="background: #007bff;">Зарегистрироваться</button>
-        <p style="text-align: center; margin-top: 15px;">
-            Уже есть аккаунт? <a href="index.html">Войти</a>
-        </p>
-        <div id="regError" class="error-msg">Ошибка регистрации. Возможно, логин занят.</div>
-    </div>
+<body class="auth-body">
 
-    <script src="auth.js"></script>
+<button id="theme-toggle" class="theme-toggle-button">🌙</button>
+
+<main class="container">
+    <h3>Регистрация</h3>
+    <div id="regError" style="color: var(--danger); margin-bottom: 1rem; display: none;"></div>
+    <form onsubmit="event.preventDefault(); register();">
+        <div class="form-grid">
+            <input type="text" id="regUsername" placeholder="Придумайте логин" required>
+            <input type="email" id="regEmail" placeholder="Ваш Email" required>
+            <input type="password" id="regPassword" placeholder="Придумайте пароль" required>
+        </div>
+        <button type="submit">Зарегистрироваться</button>
+    </form>
+    <div style="margin-top: 1.5rem; text-align: center; font-size: 0.9rem;">
+        Уже есть аккаунт? <a href="index.html" style="color: var(--primary); text-decoration: none;">Войти</a>
+    </div>
+</main>
+
+<script src="auth.js"></script>
+
 </body>
 </html>

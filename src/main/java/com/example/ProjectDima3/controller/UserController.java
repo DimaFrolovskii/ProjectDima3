@@ -1,12 +1,13 @@
 package com.example.ProjectDima3.controller;
 
 import com.example.ProjectDima3.dto.UserAssignmentDto;
-import com.example.ProjectDima3.entity.User;
+import com.example.ProjectDima3.dto.UserResponse;
+import com.example.ProjectDima3.dto.UserRoleUpdateDto;
 import com.example.ProjectDima3.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid; // Импорт для валидации
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,20 +27,31 @@ public class UserController {
     @SecurityRequirement(name = "bearer-jwt")
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
     @Operation(summary = "Назначить компанию и отдел пользователю")
     @SecurityRequirement(name = "bearer-jwt")
     @PostMapping("/{userId}/assign")
-    @PreAuthorize("hasRole('ADMIN')")
-    // ДОБАВЛЕНО: @Valid перед @RequestBody
-    public ResponseEntity<User> assignUser(
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
+    public ResponseEntity<UserResponse> assignUser(
             @PathVariable Long userId,
             @Valid @RequestBody UserAssignmentDto assignmentDto) {
 
-        User updatedUser = userService.assignUser(userId, assignmentDto);
+        UserResponse updatedUser = userService.assignUser(userId, assignmentDto);
+        return ResponseEntity.ok(updatedUser);
+    }
+
+    @Operation(summary = "Обновить роль пользователя")
+    @SecurityRequirement(name = "bearer-jwt")
+    @PutMapping("/{userId}/role")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<UserResponse> updateUserRole(
+            @PathVariable Long userId,
+            @Valid @RequestBody UserRoleUpdateDto roleUpdateDto) {
+
+        UserResponse updatedUser = userService.updateUserRole(userId, roleUpdateDto.getNewRole());
         return ResponseEntity.ok(updatedUser);
     }
 }

@@ -1,27 +1,20 @@
 package com.example.ProjectDima3.service;
 
-import com.example.ProjectDima3.dto.DashboardStatsDto;
-import com.example.ProjectDima3.repository.*;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
-@RequiredArgsConstructor
 public class DashboardService {
 
-    private final CompanyRepository companyRepository;
-    private final DepartmentRepository departmentRepository;
-    private final AssetRepository assetRepository;
-    private final IncidentRepository incidentRepository;
-    private final UserRepository userRepository;
-
-    public DashboardStatsDto getStats() {
-        long companyCount = companyRepository.count();
-        long departmentCount = departmentRepository.count();
-        long assetCount = assetRepository.count();
-        long incidentCount = incidentRepository.count();
-        long userCount = userRepository.count();
-
-        return new DashboardStatsDto(userCount, companyCount, departmentCount, assetCount, incidentCount);
+    public Map<String, Object> getDashboardData() {
+        // Здесь будет логика сбора данных для Dashboard
+        Map<String, Object> data = new HashMap<>();
+        data.put("users", 100); // Пример
+        data.put("companies", 10); // Пример
+        data.put("departments", 50); // Пример
+        data.put("assets", 1000); // Пример
+        return data;
     }
 }

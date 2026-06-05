@@ -28,6 +28,18 @@ public class Asset {
     private String description;
     private LocalDateTime createdAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_id")
+    private Company company;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id")
+    private Department department;
+
     @ManyToOne(fetch = FetchType.LAZY) //по фен-шую
     @JoinColumn(name = "facility_id")
     private Facility facility;

@@ -1,10 +1,12 @@
 package com.example.ProjectDima3.controller;
 
-import com.example.ProjectDima3.entity.Company;
+import com.example.ProjectDima3.dto.CompanyDto;
+import com.example.ProjectDima3.dto.CompanyRequest;
 import com.example.ProjectDima3.service.CompanyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,14 +26,14 @@ public class CompanyController {
     @Operation(summary = "Получить все компании")
     @SecurityRequirement(name = "bearer-jwt")
     @GetMapping
-    public ResponseEntity<List<Company>> getAll() {
+    public ResponseEntity<List<CompanyDto>> getAll() {
         return ResponseEntity.ok(companyService.getAllCompanies());
     }
 
     @Operation(summary = "Получить компанию по ID")
     @SecurityRequirement(name = "bearer-jwt")
     @GetMapping("/{id}")
-    public ResponseEntity<Company> getById(@PathVariable Long id) {
+    public ResponseEntity<CompanyDto> getById(@PathVariable Long id) {
         return ResponseEntity.ok(companyService.getCompanyById(id));
     }
 
@@ -39,8 +41,8 @@ public class CompanyController {
     @SecurityRequirement(name = "bearer-jwt")
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Company> create(@RequestBody Company company) {
-        Company createdCompany = companyService.createCompany(company);
+    public ResponseEntity<CompanyDto> create(@Valid @RequestBody CompanyRequest request) {
+        CompanyDto createdCompany = companyService.createCompany(request);
         return new ResponseEntity<>(createdCompany, HttpStatus.CREATED);
     }
 
@@ -48,8 +50,8 @@ public class CompanyController {
     @SecurityRequirement(name = "bearer-jwt")
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Company> update(@PathVariable Long id, @RequestBody Company company) {
-        return ResponseEntity.ok(companyService.updateCompany(id, company));
+    public ResponseEntity<CompanyDto> update(@PathVariable Long id, @Valid @RequestBody CompanyRequest request) {
+        return ResponseEntity.ok(companyService.updateCompany(id, request));
     }
 
     @Operation(summary = "Удалить компанию")

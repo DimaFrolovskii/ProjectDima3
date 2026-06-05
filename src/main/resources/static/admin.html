@@ -1,101 +1,89 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" class="light-theme"> <!-- Тема по умолчанию -->
 <head>
     <meta charset="UTF-8">
     <title>Панель администратора</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <script src="theme.js"></script>
 </head>
 <body>
+
 <nav>
-    <span>ProjectDima3: Admin Panel</span>
+    <span>РУБИКОН: Admin Panel</span>
     <div>
         <a href="/assets.html" class="nav-link">Активы</a>
-        <button onclick="logout()" class="logout-btn">Выйти</button>
+        <button id="theme-toggle" class="theme-toggle-button">🌙</button>
+        <button onclick="logout()" class="logout-btn danger-btn">Выйти</button>
     </div>
 </nav>
 
-<div class="container">
-    <h3>Статистика</h3>
-    <div class="stats-container">
-        <div class="stat-card">
-            <h4>Всего пользователей</h4>
-            <p id="totalUsers">0</p>
-        </div>
-        <div class="stat-card">
-            <h4>Всего активов</h4>
-            <p id="totalAssets">0</p>
-        </div>
-        <div class="stat-card">
-            <h4>Всего компаний</h4>
-            <p id="totalCompanies">0</p>
-        </div>
-        <div class="stat-card">
-            <h4>Всего отделов</h4>
-            <p id="totalDepartments">0</p>
-        </div>
-    </div>
-
+<main class="container">
     <h3>Пользователи</h3>
-</div>
-
-<div class="table-container">
-    <table id="usersTable">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Имя пользователя</th>
-            <th>Роль</th>
-            <th>Компания</th>
-            <th>Отдел</th>
-            <th style="text-align: right;">Действия</th>
-        </tr>
-        </thead>
-        <tbody id="usersBody">
-        </tbody>
-    </table>
-</div>
+    <div class="table-container">
+        <table id="usersTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Имя пользователя</th>
+                    <th>Роль</th>
+                    <th>Компания</th>
+                    <th>Отдел</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody id="usersBody"></tbody>
+        </table>
+    </div>
+</main>
 
 <!-- Модальное окно для информации о пользователе -->
 <div id="userModal" class="modal">
     <div class="modal-content">
-        <span class="close-button">&times;</span>
-        <h4 id="modalUserName"></h4>
-        <div class="form-grid">
-            <p><strong>ID:</strong> <span id="modalUserId"></span></p>
-            <p><strong>Роль:</strong> <span id="modalUserRole"></span></p>
+        <div class="modal-header">
+            <h4 id="modalUserName">Информация о пользователе</h4>
+            <span class="close-button">&times;</span>
         </div>
-        <hr>
-        <h5>Назначение</h5>
-        <input type="hidden" id="userIdToAssign">
-        <div class="form-grid">
-            <select id="companySelect"></select>
-            <select id="departmentSelect"></select>
+        <div class="modal-body">
+            <div class="form-grid">
+                <p><strong>ID:</strong> <span id="modalUserId"></span></p>
+                <p><strong>Роль:</strong> <span id="modalUserRole"></span></p>
+            </div>
+            <hr>
+            <h5>Назначение</h5>
+            <input type="hidden" id="userIdToAssign">
+            <div class="form-grid">
+                <select id="companySelect"></select>
+                <select id="departmentSelect"></select>
+            </div>
         </div>
-        <button onclick="assignUser()">Сохранить</button>
+        <div class="modal-footer">
+            <button type="button" class="close-button-footer">Отмена</button>
+            <button type="button" onclick="assignUser()">Сохранить</button>
+        </div>
     </div>
 </div>
 
 <script src="auth.js"></script>
 <script src="api.js"></script>
 <script>
-    window.onload = function() {
+    document.addEventListener('DOMContentLoaded', () => {
         loadUsers();
-        loadStats();
-    };
+        // loadStats(); // Эта функция не определена в предоставленном коде, поэтому закомментирована
 
-    const userModal = document.getElementById('userModal');
-    const closeButton = userModal.querySelector('.close-button');
+        const userModal = document.getElementById('userModal');
+        const openButtons = document.querySelectorAll('.open-user-modal'); // Предполагается, что у кнопок есть этот класс
+        const closeButton = userModal.querySelector('.close-button');
+        const closeButtonFooter = userModal.querySelector('.close-button-footer');
 
-    closeButton.onclick = function() {
-        userModal.style.display = 'none';
-    }
+        const closeModal = () => userModal.style.display = 'none';
 
-    window.onclick = function(event) {
-        if (event.target == userModal) {
-            userModal.style.display = 'none';
-        }
-    }
+        closeButton.onclick = closeModal;
+        closeButtonFooter.onclick = closeModal;
+        window.onclick = (event) => {
+            if (event.target == userModal) closeModal();
+        };
+    });
 </script>
 </body>
 </html>

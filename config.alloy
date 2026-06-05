@@ -1,0 +1,47 @@
+// 1. Находим все Docker-контейнеры на вашем компьютере
+discovery.docker "java_project" {
+    host             = "unix:///var/run/docker.sock"
+    refresh_interval = "5s"
+}
+
+// 2. Вытаскиваем имя контейнера, чтобы в Grafana вы могли фильтровать логи (например, искать только container="java-app-container")
+discovery.relabel "java_project" {
+    targets = []
+    
+    rule {
+        source_labels = ["__meta_docker_container_name"]
+        regex         = "/(.*)"
+        target_label  = "container"
+    }
+}
+
+// 3. Забираем сами логи из найденных контейнеров
+loki.source.docker "java_project" {
+    host             = "unix:///var/run/docker.sock"
+    targets          = discovery.docker.java_project.targets
+    forward_to       = [loki.process.java_project.receiver]
+    relabel_rules    = discovery.relabel.java_project.rules
+    refresh_interval = "5s"
+}
+
+// 4. Добавляем статичную метку env="production" (как просят в задании)
+loki.process "java_project" {
+    stage.static_labels {
+        values = {
+            env = "production",
+        }
+    }
+    forward_to = [loki.write.java_project.receiver]
+}
+
+// 5. САМОЕ ВАЖНОЕ: Отправляем собранные логи в наш контейнер Loki по внутренней сети Docker
+loki.write "java_project" {
+    endpoint {
+        url  = "http://loki:3100/loki/api/v1/push"
+    }
+}
+
+// 6. Включаем интерфейс для проверки того, что Alloy работает
+livedebugging {
+    enabled = true
+}

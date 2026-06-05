@@ -1,30 +1,24 @@
 package com.example.ProjectDima3.controller;
 
-import com.example.ProjectDima3.dto.DashboardStatsDto;
-import com.example.ProjectDima3.service.DashboardService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/dashboard")
-@RequiredArgsConstructor
-@Tag(name = "Dashboard", description = "API для получения сводной информации")
 public class DashboardController {
 
-    private final DashboardService dashboardService;
-
-    @Operation(summary = "Получить статистику для дашборда")
-    @SecurityRequirement(name = "bearer-jwt")
-    @GetMapping("/stats")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<DashboardStatsDto> getStats() {
-        return ResponseEntity.ok(dashboardService.getStats());
+    @GetMapping
+    public Map<String, Object> getDashboardData() {
+        // Здесь будет логика сбора данных для Dashboard
+        Map<String, Object> data = new HashMap<>();
+        data.put("users", 100); // Пример
+        data.put("companies", 10); // Пример
+        data.put("departments", 50); // Пример
+        data.put("assets", 1000); // Пример
+        return data;
     }
 }

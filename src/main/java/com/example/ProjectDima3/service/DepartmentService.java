@@ -1,42 +1,72 @@
 package com.example.ProjectDima3.service;
 
+import com.example.ProjectDima3.dto.DepartmentDto;
+import com.example.ProjectDima3.dto.DepartmentRequest;
+import com.example.ProjectDima3.entity.Company;
 import com.example.ProjectDima3.entity.Department;
+import com.example.ProjectDima3.repository.CompanyRepository;
 import com.example.ProjectDima3.repository.DepartmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class DepartmentService {
 
     private final DepartmentRepository departmentRepository;
+    private final CompanyRepository companyRepository;
 
-    public List<Department> getAllDepartments() {
-        return departmentRepository.findAll();
+    public List<DepartmentDto> getAllDepartments() {
+        return departmentRepository.findAll().stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
-    public Department getDepartmentById(Long id) {
-        return departmentRepository.findById(id).orElseThrow(() -> new RuntimeException("Department not found"));
+    public DepartmentDto getDepartmentById(Long id) {
+        return departmentRepository.findById(id)
+                .map(this::toDto)
+                .orElseThrow(() -> new RuntimeException("Department not found"));
     }
 
-    public Department createDepartment(Department department) {
-        return departmentRepository.save(department);
+    public List<DepartmentDto> getDepartmentsByCompanyId(Long companyId) {
+        return departmentRepository.findByCompanyId(companyId).stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
-    public Department updateDepartment(Long id, Department departmentDetails) {
-        Department department = getDepartmentById(id);
-        department.setName(departmentDetails.getName());
-        department.setCompany(departmentDetails.getCompany());
-        return departmentRepository.save(department);
+    public DepartmentDto createDepartment(DepartmentRequest request) {
+        Company company = companyRepository.findById(request.getCompanyId())
+                .orElseThrow(() -> new RuntimeException("Company not found"));
+        Department department = new Department();
+        department.setName(request.getName());
+        department.setCompany(company);
+        return toDto(departmentRepository.save(department));
+    }
+
+    public DepartmentDto updateDepartment(Long id, DepartmentRequest request) {
+        Department department = departmentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Department not found"));
+        Company company = companyRepository.findById(request.getCompanyId())
+                .orElseThrow(() -> new RuntimeException("Company not found"));
+        department.setName(request.getName());
+        department.setCompany(company);
+        return toDto(departmentRepository.save(department));
     }
 
     public void deleteDepartment(Long id) {
         departmentRepository.deleteById(id);
     }
 
-    public List<Department> getDepartmentsByCompanyId(Long companyId) {
-        return departmentRepository.findByCompanyId(companyId);
+    private DepartmentDto toDto(Department department) {
+        DepartmentDto dto = new DepartmentDto();
+        dto.setId(department.getId());
+        dto.setName(department.getName());
+        if (department.getCompany() != null) {
+            dto.setCompanyId(department.getCompany().getId());
+        }
+        return dto;
     }
 }
