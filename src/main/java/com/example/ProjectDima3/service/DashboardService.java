@@ -9,12 +9,11 @@ import java.util.Map;
 public class DashboardService {
 
     public Map<String, Object> getDashboardData() {
-        // Здесь будет логика сбора данных для Dashboard
         Map<String, Object> data = new HashMap<>();
-        data.put("users", 100); // Пример
-        data.put("companies", 10); // Пример
-        data.put("departments", 50); // Пример
-        data.put("assets", 1000); // Пример
+        data.put("users", 100);
+        data.put("companies", 10);
+        data.put("departments", 50);
+        data.put("assets", 1000);
         return data;
     }
 }

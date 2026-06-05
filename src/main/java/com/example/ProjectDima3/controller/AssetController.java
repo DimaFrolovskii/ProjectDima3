@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
 @Validated
 @RestController
 @RequestMapping("/api/assets")
@@ -23,10 +24,10 @@ public class AssetController {
 
     private final AssetService assetService;
 
-    @Operation(summary = "Получить всех активов")
+    @Operation(summary = "Получить всех активов (с фильтрацией по роли)")
     @SecurityRequirement(name = "bearer-jwt")
     @GetMapping
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
     public ResponseEntity<Page<AssetDTO>> getAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -36,36 +37,32 @@ public class AssetController {
     @Operation(summary = "Получить актив по ID")
     @SecurityRequirement(name = "bearer-jwt")
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'MANAGER', 'ADMIN')")
     public ResponseEntity<AssetDTO> getById(@PathVariable Long id) {
         return ResponseEntity.ok(assetService.getAssetById(id));
     }
 
-    @Operation(summary = "создать актив")
+    @Operation(summary = "Создать актив")
     @SecurityRequirement(name = "bearer-jwt")
     @PostMapping
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<AssetDTO> create(@Valid @RequestBody AssetDTO assetDto) {
         return new ResponseEntity<>(assetService.createAsset(assetDto), HttpStatus.CREATED);
     }
 
     @Operation(summary = "Обновить актив")
     @SecurityRequirement(name = "bearer-jwt")
-
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     public ResponseEntity<AssetDTO> update(@PathVariable Long id, @Valid @RequestBody AssetDTO dto) {
         return ResponseEntity.ok(assetService.updateAsset(id, dto));
     }
 
     @Operation(summary = "Удалить актив")
     @SecurityRequirement(name = "bearer-jwt")
-    //админ
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         assetService.deleteAsset(id);
         return ResponseEntity.noContent().build();
     }
-
 }

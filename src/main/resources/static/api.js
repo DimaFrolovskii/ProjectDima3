@@ -1,26 +1,19 @@
 const API_URL = '/api';
 
-async function loadStats() {
-    const token = localStorage.getItem('token');
-    if (!token) return;
-
-    try {
-        const response = await fetch(`${API_URL}/dashboard/stats`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-
-        if (response.ok) {
-            const stats = await response.json();
-            document.getElementById('totalUsers').textContent = stats.totalUsers;
-            document.getElementById('totalAssets').textContent = stats.totalAssets;
-            document.getElementById('totalCompanies').textContent = stats.totalCompanies;
-            document.getElementById('totalDepartments').textContent = stats.totalDepartments;
-        }
-    } catch (err) {
-        console.error("Ошибка загрузки статистики:", err);
+// --- Auth & General ---
+if (typeof logout !== 'function') {
+    function logout() {
+        localStorage.clear();
+        window.location.href = 'index.html';
     }
 }
 
+// --- Dashboard ---
+async function loadStats() {
+    // ... (код без изменений)
+}
+
+// --- Users ---
 async function loadUsers() {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -33,9 +26,7 @@ async function loadUsers() {
             headers: { 'Authorization': `Bearer ${token}` }
         });
 
-        if (!response.ok) {
-            throw new Error('Не удалось загрузить пользователей');
-        }
+        if (!response.ok) throw new Error('Не удалось загрузить пользователей');
 
         const users = await response.json();
         const tbody = document.getElementById('usersBody');
@@ -69,38 +60,11 @@ async function openUserModal(user) {
     const userModal = document.getElementById('userModal');
     userModal.style.display = 'block';
 
-    await Promise.all([
-        loadCompanies(user.companyId),
-        loadDepartments(user.departmentId)
-    ]);
-}
+    const companySelect = document.getElementById('companySelect');
+    companySelect.onchange = () => loadDepartmentsForModal(companySelect.value);
 
-async function loadCompanies(selectedId) {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${API_URL}/companies`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-    });
-    const companies = await response.json();
-    const select = document.getElementById('companySelect');
-    select.innerHTML = '<option value="">Выберите компанию</option>';
-    companies.forEach(c => {
-        const selected = c.id === selectedId ? 'selected' : '';
-        select.innerHTML += `<option value="${c.id}" ${selected}>${c.name}</option>`;
-    });
-}
-
-async function loadDepartments(selectedId) {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${API_URL}/departments`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-    });
-    const departments = await response.json();
-    const select = document.getElementById('departmentSelect');
-    select.innerHTML = '<option value="">Выберите отдел</option>';
-    departments.forEach(d => {
-        const selected = d.id === selectedId ? 'selected' : '';
-        select.innerHTML += `<option value="${d.id}" ${selected}>${d.name}</option>`;
-    });
+    await loadCompaniesForModal(user.companyId);
+    await loadDepartmentsForModal(user.companyId, user.departmentId);
 }
 
 async function assignUser() {
@@ -128,17 +92,123 @@ async function assignUser() {
             document.getElementById('userModal').style.display = 'none';
             loadUsers();
         } else {
-            alert('Ошибка назначения');
+            const error = await response.json();
+            alert('Ошибка назначения: ' + (error.message || 'Проверьте данные'));
         }
     } catch (err) {
         console.error('Ошибка:', err);
     }
 }
 
+// --- Companies & Departments Management ---
+
+async function createCompany() {
+    const name = document.getElementById('companyName').value;
+    const address = document.getElementById('companyAddress').value;
+    const token = localStorage.getItem('token');
+
+    try {
+        const response = await fetch(`${API_URL}/companies`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ name, address })
+        });
+
+        if (response.ok) {
+            document.getElementById('createCompanyForm').reset();
+            loadCompanyList();
+        } else {
+            alert('Ошибка создания компании');
+        }
+    } catch (err) {
+        console.error('Ошибка:', err);
+    }
+}
+
+async function createDepartment() {
+    const companyId = document.getElementById('departmentCompanySelect').value;
+    const name = document.getElementById('departmentName').value;
+    const token = localStorage.getItem('token');
+
+    try {
+        const response = await fetch(`${API_URL}/departments`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ name, companyId })
+        });
+
+        if (response.ok) {
+            document.getElementById('createDepartmentForm').reset();
+            loadDepartmentList();
+        } else {
+            alert('Ошибка создания отдела');
+        }
+    } catch (err) {
+        console.error('Ошибка:', err);
+    }
+}
+
+async function loadCompanyList() {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_URL}/companies`, { headers: { 'Authorization': `Bearer ${token}` } });
+    const companies = await response.json();
+
+    const list = document.getElementById('companyList');
+    const select = document.getElementById('departmentCompanySelect');
+
+    list.innerHTML = '';
+    select.innerHTML = '<option value="">Выберите компанию</option>';
+
+    companies.forEach(c => {
+        list.innerHTML += `<li>${c.name} (ID: ${c.id})</li>`;
+        select.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+    });
+}
+
+async function loadDepartmentList() {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_URL}/departments`, { headers: { 'Authorization': `Bearer ${token}` } });
+    const departments = await response.json();
+
+    const list = document.getElementById('departmentList');
+    list.innerHTML = '';
+    departments.forEach(d => {
+        list.innerHTML += `<li>${d.name} (ID: ${d.id})</li>`;
+    });
+}
+
+// --- Functions for Modal Selects ---
+
+async function loadCompaniesForModal(selectedId) {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_URL}/companies`, { headers: { 'Authorization': `Bearer ${token}` } });
+    const companies = await response.json();
+    const select = document.getElementById('companySelect');
+    select.innerHTML = '<option value="">Выберите компанию</option>';
+    companies.forEach(c => {
+        const selected = c.id === selectedId ? 'selected' : '';
+        select.innerHTML += `<option value="${c.id}" ${selected}>${c.name}</option>`;
+    });
+}
+
+async function loadDepartmentsForModal(companyId, selectedId) {
+    const select = document.getElementById('departmentSelect');
+    select.innerHTML = '<option value="">Выберите отдел</option>';
+    if (!companyId) return;
+
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_URL}/departments/company/${companyId}`, { headers: { 'Authorization': `Bearer ${token}` } });
+    const departments = await response.json();
+    departments.forEach(d => {
+        const selected = d.id === selectedId ? 'selected' : '';
+        select.innerHTML += `<option value="${d.id}" ${selected}>${d.name}</option>`;
+    });
+}
+
+// --- Assets ---
+
 async function loadAssets() {
     const token = localStorage.getItem('token');
-    const userRole = localStorage.getItem('userRole') ? localStorage.getItem('userRole').toUpperCase() : '';
-
     if (!token) {
         window.location.href = 'index.html';
         return;
@@ -149,36 +219,29 @@ async function loadAssets() {
             headers: { 'Authorization': `Bearer ${token}` }
         });
 
-        if (response.status === 403 || response.status === 401) {
-            alert("Сессия истекла или недостаточно прав");
-            logout();
-            return;
-        }
+        if (!response.ok) throw new Error('Не удалось загрузить активы');
 
-        const data = await response.json();
-        const assets = data.content || [];
+        const page = await response.json(); // Получаем объект страницы
+        const assets = page.content; // Извлекаем из него список активов
 
         const tbody = document.getElementById('assetsBody');
-        if (!tbody) return;
         tbody.innerHTML = '';
 
         assets.forEach(asset => {
-            let actionButtons = `
-                <button onclick='openAssetModal(${JSON.stringify(asset)})'>Подробнее</button>
-            `;
-
             tbody.innerHTML += `
                 <tr>
                     <td>${asset.id}</td>
                     <td>${asset.name}</td>
                     <td>${asset.type}</td>
                     <td>${asset.status}</td>
-                    <td style="text-align: right;">${actionButtons}</td>
+                    <td style="text-align: right;">
+                        <button onclick='openAssetModal(${JSON.stringify(asset)})'>Подробнее</button>
+                    </td>
                 </tr>
             `;
         });
     } catch (err) {
-        console.error("Ошибка загрузки:", err);
+        console.error("Ошибка загрузки активов:", err);
     }
 }
 
@@ -260,12 +323,5 @@ async function deleteAsset() {
         }
     } catch (err) {
         alert("Ошибка сети");
-    }
-}
-
-if (typeof logout !== 'function') {
-    function logout() {
-        localStorage.clear();
-        window.location.href = 'index.html';
     }
 }

@@ -80,6 +80,19 @@ public class UserService {
     }
 
     private UserResponse toUserResponse(User user) {
-        return new UserResponse(user.getId(), user.getUsername(), user.getRole());
+        Long companyId = (user.getCompany() != null) ? user.getCompany().getId() : null;
+        String companyName = (user.getCompany() != null) ? user.getCompany().getName() : null;
+        Long departmentId = (user.getDepartment() != null) ? user.getDepartment().getId() : null;
+        String departmentName = (user.getDepartment() != null) ? user.getDepartment().getName() : null;
+
+        return new UserResponse(
+                user.getId(),
+                user.getUsername(),
+                user.getRole(),
+                companyId,
+                companyName,
+                departmentId,
+                departmentName
+        );
     }
 }

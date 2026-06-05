@@ -1,11 +1,19 @@
 <!DOCTYPE html>
-<html lang="ru" class="light-theme"> <!-- Тема по умолчанию -->
+<html lang="ru" class="light-theme">
 <head>
     <meta charset="UTF-8">
     <title>Панель администратора</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <script src="theme.js"></script>
+    <link rel="icon" href="data:,">
+
+    <script>
+        (function() {
+            var theme = localStorage.getItem('theme-preference') || 'light';
+            document.documentElement.className = theme + '-theme';
+        })();
+    </script>
+
 </head>
 <body>
 
@@ -19,6 +27,7 @@
 </nav>
 
 <main class="container">
+    <!-- Секция пользователей -->
     <h3>Пользователи</h3>
     <div class="table-container">
         <table id="usersTable">
@@ -34,6 +43,37 @@
             </thead>
             <tbody id="usersBody"></tbody>
         </table>
+    </div>
+
+    <hr class="section-divider">
+
+    <!-- Секция управления компаниями и отделами -->
+    <div class="management-grid">
+        <!-- Управление компаниями -->
+        <section>
+            <h4>Управление компаниями</h4>
+            <form id="createCompanyForm" onsubmit="event.preventDefault(); createCompany();" class="management-form">
+                <input type="text" id="companyName" placeholder="Название новой компании" required>
+                <input type="text" id="companyAddress" placeholder="Адрес">
+                <button type="submit">Создать компанию</button>
+            </form>
+            <h5>Существующие компании:</h5>
+            <ul id="companyList" class="item-list"></ul>
+        </section>
+
+        <!-- Управление отделами -->
+        <section>
+            <h4>Управление отделами</h4>
+            <form id="createDepartmentForm" onsubmit="event.preventDefault(); createDepartment();" class="management-form">
+                <select id="departmentCompanySelect" required>
+                    <option value="">Выберите компанию</option>
+                </select>
+                <input type="text" id="departmentName" placeholder="Название нового отдела" required>
+                <button type="submit">Создать отдел</button>
+            </form>
+            <h5>Существующие отделы:</h5>
+            <ul id="departmentList" class="item-list"></ul>
+        </section>
     </div>
 </main>
 
@@ -68,11 +108,13 @@
 <script src="api.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        // Загрузка основных данных
         loadUsers();
-        // loadStats(); // Эта функция не определена в предоставленном коде, поэтому закомментирована
+        loadCompanyList();
+        loadDepartmentList();
 
+        // Логика модального окна
         const userModal = document.getElementById('userModal');
-        const openButtons = document.querySelectorAll('.open-user-modal'); // Предполагается, что у кнопок есть этот класс
         const closeButton = userModal.querySelector('.close-button');
         const closeButtonFooter = userModal.querySelector('.close-button-footer');
 
@@ -83,6 +125,32 @@
         window.onclick = (event) => {
             if (event.target == userModal) closeModal();
         };
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var THEME_KEY = 'theme-preference';
+        var btn = document.getElementById('theme-toggle');
+
+        function getTheme() {
+            return localStorage.getItem(THEME_KEY) || 'light';
+        }
+
+        function applyTheme(theme) {
+            document.documentElement.className = theme + '-theme';
+            if (btn) btn.innerHTML = theme === 'dark' ? '☀️' : '🌙';
+        }
+
+        applyTheme(getTheme()); // обновляем иконку кнопки
+
+        if (btn) {
+            btn.addEventListener('click', function() {
+                var newTheme = getTheme() === 'light' ? 'dark' : 'light';
+                localStorage.setItem(THEME_KEY, newTheme);
+                applyTheme(newTheme);
+            });
+        }
     });
 </script>
 </body>

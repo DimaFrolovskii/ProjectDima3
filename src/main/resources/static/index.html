@@ -6,7 +6,14 @@
     <title>Авторизация - ProjectDima3</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <script src="theme.js" type="text/javascript"></script>
+
+    <script>
+        (function() {
+            var theme = localStorage.getItem('theme-preference') || 'light';
+            document.documentElement.className = theme + '-theme';
+        })();
+    </script>
+
 </head>
 <body class="auth-body">
 
@@ -28,6 +35,32 @@
 </main>
 
 <script src="auth.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var THEME_KEY = 'theme-preference';
+        var btn = document.getElementById('theme-toggle');
+
+        function getTheme() {
+            return localStorage.getItem(THEME_KEY) || 'light';
+        }
+
+        function applyTheme(theme) {
+            document.documentElement.className = theme + '-theme';
+            if (btn) btn.innerHTML = theme === 'dark' ? '☀️' : '🌙';
+        }
+
+        applyTheme(getTheme()); // обновляем иконку кнопки
+
+        if (btn) {
+            btn.addEventListener('click', function() {
+                var newTheme = getTheme() === 'light' ? 'dark' : 'light';
+                localStorage.setItem(THEME_KEY, newTheme);
+                applyTheme(newTheme);
+            });
+        }
+    });
+</script>
 
 </body>
 </html>
